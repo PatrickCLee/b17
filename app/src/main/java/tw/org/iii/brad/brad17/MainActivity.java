@@ -1,5 +1,5 @@
 package tw.org.iii.brad.brad17;
-
+//*0 manifest權限, gradle implementation, 新增class MainApp extends Application, manifest的Application新增name屬性
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -32,12 +32,14 @@ public class MainActivity extends AppCompatActivity {
 
         account = findViewById(R.id.account);
         passwd = findViewById(R.id.passwd);
-        realname = findViewById(R.id.realname);
+        realname = findViewById(R.id.realname);             //*1
         mesg = findViewById(R.id.mesg);
     }
 
-    public void add(View view) {
-        String url = "http://10.0.103.206:8080/Brad/brad59.jsp?account=" +
+    public void add(View view) {                                //*2 此招為get,從輸入欄帶參數
+        String url =
+//                "http://10.0.103.206:8080/Brad/brad59.jsp?account=" +
+                "http://192.168.0.16:8080/AndroidClass/brad59.jsp?account=" +
                 account.getText().toString() +"&passwd=" +
                 passwd.getText().toString() +"&realname=" +
                 realname.getText().toString();
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Toast.makeText(MainActivity.this, "OK", Toast.LENGTH_LONG).show();//此處的context參數若為this則是指Response.Listener
+                        Toast.makeText(MainActivity.this, "OK", Toast.LENGTH_LONG).show();//此處的context參數若為this則是指Response.Listener,故要改為MainActivity.this
                     }
                 },
                 new Response.ErrorListener() {
@@ -61,8 +63,10 @@ public class MainActivity extends AppCompatActivity {
         );
         MainApp.queue.add(request);
     }
-    public void add2(View view) {
-        String url = "http://10.0.103.206:8080/Brad/brad60.jsp";
+
+    public void add2(View view) {                               //*3 此招為post,url都沒有帶參數,
+//        String url = "http://10.0.103.206:8080/Brad/brad60.jsp";
+        String url = "http://192.168.0.16:8080/AndroidClass/brad60.jsp";
 
         StringRequest request = new StringRequest(
                 Request.Method.POST,
@@ -79,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.v("brad",error.toString());
                     }
                 }
-        ){  //直接在此改寫,不像16的另外拉一個class去當request才改寫
+        ){  //直接在此改寫StringRequest,不像16的另外拉一個class去當request才改寫
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 HashMap<String,String> params = new HashMap<>();
@@ -90,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 return params;
             }
         };
+
         MainApp.queue.add(request);
     }
 
@@ -97,7 +102,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void test1(View view){
         JsonArrayRequest request = new JsonArrayRequest(
-                "http://10.0.103.206:8080/Brad/brad24",
+//                "http://10.0.103.206:8080/Brad/brad24",
+                "http://192.168.0.16:8080/AndroidClass/brad24",
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
@@ -114,7 +120,10 @@ public class MainActivity extends AppCompatActivity {
             mesg.setText("");
             for (int i=0; i<root.length(); i++){
                 JSONObject row = root.getJSONObject(i);
-                mesg.append(row.getString("account")+"\n");
+                mesg.append(
+                        row.getString("id")+"::"
+                        + row.getString("account")+":::"
+                        + row.getString("realname") + "\n");
             }
         }catch (Exception e){
             Log.v("brad",e.toString());
